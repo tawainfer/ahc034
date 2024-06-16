@@ -35,40 +35,105 @@ public class MainClass {
     int ix = 0;
     var ans = new List<string>();
 
-    while(cy < n) {
-      if(f[cy][cx] > 0) {
-        int x = f[cy][cx];
-        ans.Add($"+{x}");
-        w += x;
-        f[cy][cx] = 0;
-      } else if(f[cy][cx] < 0) {
-        int x = Math.Min(-f[cy][cx], w);
-        if(x > 0) ans.Add($"-{x}");
-        w -= x;
-        f[cy][cx] += x;
-      }
+    // while(cy < n) {
+    //   if(f[cy][cx] > 0) {
+    //     int x = f[cy][cx];
+    //     ans.Add($"+{x}");
+    //     w += x;
+    //     f[cy][cx] = 0;
+    //   } else if(f[cy][cx] < 0) {
+    //     int x = Math.Min(-f[cy][cx], w);
+    //     if(x > 0) ans.Add($"-{x}");
+    //     w -= x;
+    //     f[cy][cx] += x;
+    //   }
 
-      int ey = cy;
-      int ex = cx + sx[ix];
-      if(0 <= ey && ey < n && 0 <= ex && ex < n) {
-        cy = ey;
-        cx = ex;
-        ans.Add(ix == 0 ? "R" : "L");
-      } else {
-        cy++;
-        if(cy >= n) break;
-        ix = (ix + 1) % sx.Count;
-        ans.Add("D");
-      }
-    }
-    cy = n - 1;
+    //   int ey = cy;
+    //   int ex = cx + sx[ix];
+    //   if(0 <= ey && ey < n && 0 <= ex && ex < n) {
+    //     cy = ey;
+    //     cx = ex;
+    //     ans.Add(ix == 0 ? "R" : "L");
+    //   } else {
+    //     cy++;
+    //     if(cy >= n) break;
+    //     ix = (ix + 1) % sx.Count;
+    //     ans.Add("D");
+    //   }
+    // }
+    // cy = n - 1;
 
-    foreach(string s in ans) {
-      WriteLine(s);
-    }
+    // foreach(string s in ans) {
+    //   WriteLine(s);
+    // }
 
     var my = new List<int>(){-1, 0, 1, 0};
     var mx = new List<int>(){0, -1, 0, 1};
+
+    while(true) {
+      var seen = new List<List<bool>>();
+      for(int i = 0; i < n; i++) {
+        seen.Add(new List<bool>());
+        for(int j = 0; j < n; j++) {
+          seen[i].Add(false);
+        }
+      }
+      seen[cy][cx] = true;
+
+      var q = new Queue<List<int>>();
+      q.Enqueue(new List<int>(){cy, cx});
+      var ptn = new List<List<int>>();
+
+      while(q.Count >= 1) {
+        int ccy = q.Peek()[0];
+        int ccx = q.Peek()[1];
+        q.Dequeue();
+
+        for(int i = 0; i < 4; i++) {
+          int eey = ccy + my[i];
+          int eex = ccx + mx[i];
+          if(!(0 <= eey && eey < n && 0 <= eex && eex < n)) continue;
+          if(seen[eey][eex]) continue;
+          seen[eey][eex] = true;
+          q.Enqueue(new List<int>(){eey, eex});
+
+          if(f[eey][eex] > 0) {
+            ptn.Add(new List<int>(){eey, eex});
+          }
+        }
+      }
+
+      if(ptn.Count == 0) break;
+
+      int ey = ptn[0][0];
+      int ex = ptn[0][1];
+      while(cy > ey) {
+        WriteLine("U");
+        cy--;
+      }
+      while(cy < ey) {
+        WriteLine("D");
+        cy++;
+      }
+      while(cx > ex) {
+        WriteLine("L");
+        cx--;
+      }
+      while(cx < ex) {
+        WriteLine("R");
+        cx++;
+      }
+      while() {
+
+      }
+
+      w += (f[ey][ex]);
+      WriteLine($"+{f[ey][ex]}");
+      f[ey][ex] = 0;
+
+      cy = ey;
+      cx = ex;
+    }
 
     while(true) {
       var seen = new List<List<bool>>();
