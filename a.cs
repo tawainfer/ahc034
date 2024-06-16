@@ -42,7 +42,7 @@ public class MainClass {
     return (long)Math.Round(1000000000.0 * (double)abs_sum / (double)(cost + diff)); 
   }
 
-  public static List<string> Tidy(int base_cnt, int n, List<List<int>> e) {
+  public static List<string> Tidy(int cy, int cx, int base_cnt, int n, List<List<int>> e) {
     var res = new List<string>();
     var f = new List<List<int>>();
     for(int i = 0; i < e.Count; i++) {
@@ -54,8 +54,6 @@ public class MainClass {
 
     var my = new List<int>(){-1, 0, 1, 0};
     var mx = new List<int>(){0, -1, 0, 1};
-    int cy = 0;
-    int cx = 0;
     int w = 0;
 
     int cnt = base_cnt;
@@ -150,36 +148,101 @@ public class MainClass {
 
     int n = int.Parse(ReadLine());
     int abs_sum = 0;
+    int max_h = int.MinValue;
+    int min_h = int.MaxValue;
+    int sy = -1;
+    int sx = -1;
+    int sy2 = -1;
+    int sx2 = -1;
     var f = new List<List<int>>();
     for(int i = 0; i < n; i++) {
       f.Add(new List<int>());
       var tmp = ReadLine().Split().Select(int.Parse).ToArray();
-      foreach(int x in tmp) {
+      for(int j = 0; j < n; j++) {
+        int x = tmp[j];
         f[i].Add(x);
         abs_sum += (x > 0 ? x : -x);
+        if(x > max_h) {
+          max_h = x;
+          sy = i;
+          sx = j;
+        }
+        if(x < min_h) {
+          min_h = x;
+          sy2 = i;
+          sx2 = j;
+        }
       }
     }
+
+    var sys = new List<int>();
+    sys.Add(sy);
+    sys.Add(sy2);
+    sys.Add(0);
+    var sxs = new List<int>();
+    sxs.Add(sx);
+    sxs.Add(sx2);
+    sxs.Add(0);
 
     long max_score = -1;
     var ans = new List<string>();
-    int bc = 1;
-    while(stopwatch.Elapsed <= timeout) {
-      List<string> res = Tidy(bc, n, f);
-      long score = Score(res, abs_sum);
-      if(score > max_score) {
-        // WriteLine($"up!! bc = {bc} {max_score} => {score}");
-        max_score = score;
-        ans = res;
-      } else {
-        // WriteLine($"stay... bc = {bc} {max_score} => {score}");
-      }
-      bc++;
-    }
-    // WriteLine($"end bc = {bc}");
 
-      foreach(string s in ans) {
-        if(s[0] == '!') continue;
-        WriteLine(s);
+    for(int k = 0; k < sys.Count; k++) {
+      int cy = 0;
+      int cx = 0;
+
+      var header = new List<string>();
+      while(cy > sys[k]) {
+        header.Add("U");
+        header.Add($"!{100}");
+        cy--;
       }
+      while(cy < sys[k]) {
+        header.Add("D");
+        header.Add($"!{100}");
+        cy++;
+      }
+      while(cx > sxs[k]) {
+        header.Add("L");
+        header.Add($"!{100}");
+        cx--;
+      }
+      while(cx < sxs[k]) {
+        header.Add("R");
+        header.Add($"!{100}");
+        cx++;
+      }
+
+      // while(stopwatch.Elapsed <= timeout) {
+      int bc = 1;
+      while(bc <= 30) {
+        var res = new List<string>();
+        foreach(string s in header) {
+          res.Add(s);
+        }
+
+        List<string> tmp = Tidy(cy, cx, bc, n, f);
+        foreach(string s in tmp) {
+          res.Add(s);
+        }
+
+        long score = Score(res, abs_sum);
+        if(score > max_score) {
+          // WriteLine($"up!! bc = {bc} {max_score} => {score}");
+          max_score = score;
+          ans = res;
+        } else {
+          // WriteLine($"stay... bc = {bc} {max_score} => {score}");
+        }
+        bc++;
+      }
+      // WriteLine($"end bc = {bc}");
+    }
+
+    // WriteLine($"last score: {Score(ans, abs_sum)}");
+    foreach(string s in ans) {
+      if(s[0] == '!') continue;
+      WriteLine(s);
+    }
   }
 }
