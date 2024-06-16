@@ -23,9 +23,24 @@ public class MainClass {
     return true;
   }
 
-  // public static int Score(int abs_sum, int cost, int diff) {
-  //   return Math.Round(1000000000 * (double)abs_sum / (cost + diff));
+  // public static int Score(double abs_sum, double cost, double diff) {
+  //   return Math.Round(1000000000 * abs_sum / (cost + diff));
   // }
+
+  public static long Score(List<string> v, int abs_sum) {
+    long cost = 0;
+    foreach(string s in v) {
+      if(s[0] == '+' || s[0] == '-' || s[0] == '!') {
+        string t = s.Substring(1);
+        cost += long.Parse(t);
+      }
+    }
+
+    long diff = 0;
+    // WriteLine($"cost: {cost}");
+    // WriteLine($"score: {1000000000.0 * (double)abs_sum / (double)(cost + diff)}");
+    return (long)Math.Round(1000000000.0 * (double)abs_sum / (double)(cost + diff)); 
+  }
 
   public static List<string> Tidy(int base_cnt, int n, List<List<int>> e) {
     var res = new List<string>();
@@ -36,7 +51,6 @@ public class MainClass {
         f[i].Add(e[i][j]);
       }
     }
-
 
     var my = new List<int>(){-1, 0, 1, 0};
     var mx = new List<int>(){0, -1, 0, 1};
@@ -87,18 +101,22 @@ public class MainClass {
       int ex = ptn[0][1];
       while(cy > ey) {
         res.Add("U");
+        res.Add($"!{100 + w}");
         cy--;
       }
       while(cy < ey) {
         res.Add("D");
+        res.Add($"!{100 + w}");
         cy++;
       }
       while(cx > ex) {
         res.Add("L");
+        res.Add($"!{100 + w}");
         cx--;
       }
       while(cx < ex) {
         res.Add("R");
+        res.Add($"!{100 + w}");
         cx++;
       }
 
@@ -128,21 +146,40 @@ public class MainClass {
 
   public static void Main(string[] args) {
     var stopwatch = Stopwatch.StartNew();
-    var timeout = TimeSpan.FromSeconds(2.9);
+    var timeout = TimeSpan.FromSeconds(2.0);
 
     int n = int.Parse(ReadLine());
+    int abs_sum = 0;
     var f = new List<List<int>>();
     for(int i = 0; i < n; i++) {
       f.Add(new List<int>());
       var tmp = ReadLine().Split().Select(int.Parse).ToArray();
       foreach(int x in tmp) {
         f[i].Add(x);
+        abs_sum += (x > 0 ? x : -x);
       }
     }
 
-    List<string> res = Tidy(10, n, f);
-    foreach(string s in res) {
-      WriteLine(s);
+    long max_score = -1;
+    var ans = new List<string>();
+    int bc = 1;
+    while(stopwatch.Elapsed <= timeout) {
+      List<string> res = Tidy(bc, n, f);
+      long score = Score(res, abs_sum);
+      if(score > max_score) {
+        // WriteLine($"up!! bc = {bc} {max_score} => {score}");
+        max_score = score;
+        ans = res;
+      } else {
+        // WriteLine($"stay... bc = {bc} {max_score} => {score}");
+      }
+      bc++;
     }
+    // WriteLine($"end bc = {bc}");
+
+      foreach(string s in ans) {
+        if(s[0] == '!') continue;
+        WriteLine(s);
+      }
   }
 }
