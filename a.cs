@@ -144,6 +144,8 @@ public class MainClass {
     //   cx = ex;
     // }
 
+    int base_cnt = 5;
+    int cnt = base_cnt;
     while(!Check(f)) {
       var seen = new List<List<bool>>();
       for(int i = 0; i < n; i++) {
@@ -171,13 +173,16 @@ public class MainClass {
           seen[eey][eex] = true;
           q.Enqueue(new List<int>(){eey, eex});
 
-          if((w >= 1 && f[eey][eex] < 0) || (w == 0 && f[eey][eex] > 0)) {
+          if((cnt == 0 && f[eey][eex] < 0) || (cnt >= 1 && f[eey][eex] > 0)) {
             ptn.Add(new List<int>(){eey, eex});
           }
         }
       }
 
-      if(ptn.Count == 0) continue;
+      if(ptn.Count == 0) {
+        cnt = 0;
+        continue;
+      }
 
       int ey = ptn[0][0];
       int ex = ptn[0][1];
@@ -198,16 +203,21 @@ public class MainClass {
         cx++;
       }
 
-      if(w == 0) {
+      if(cnt >= 1) {
         int x = f[cy][cx];
         WriteLine($"+{x}");
         w += x;
         f[cy][cx] = 0;
+        cnt--;
       } else {
         int x = Math.Min(-f[cy][cx], w);
         if(x > 0) WriteLine($"-{x}");
         w -= x;
         f[cy][cx] += x;
+
+        if(w == 0) {
+          cnt = base_cnt;
+        }
       }
 
       cy = ey;
