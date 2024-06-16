@@ -14,6 +14,15 @@ public class MainClass {
     }
   }
 
+  public static bool Check(List<List<int>> f) {
+    for(int i = 0; i < f.Count; i++) {
+      for(int j = 0; j < f[i].Count; j++) {
+        if(f[i][j] != 0) return false;
+      }
+    }
+    return true;
+  }
+
   public static int Main(string[] args) {
     var stopwatch = Stopwatch.StartNew();
     var timeout = TimeSpan.FromSeconds(2.9);
@@ -70,7 +79,72 @@ public class MainClass {
     var my = new List<int>(){-1, 0, 1, 0};
     var mx = new List<int>(){0, -1, 0, 1};
 
-    while(true) {
+    // while(true) {
+    //   var seen = new List<List<bool>>();
+    //   for(int i = 0; i < n; i++) {
+    //     seen.Add(new List<bool>());
+    //     for(int j = 0; j < n; j++) {
+    //       seen[i].Add(false);
+    //     }
+    //   }
+    //   seen[cy][cx] = true;
+
+    //   var q = new Queue<List<int>>();
+    //   q.Enqueue(new List<int>(){cy, cx});
+    //   var ptn = new List<List<int>>();
+
+    //   while(q.Count >= 1) {
+    //     int ccy = q.Peek()[0];
+    //     int ccx = q.Peek()[1];
+    //     q.Dequeue();
+
+    //     for(int i = 0; i < 4; i++) {
+    //       int eey = ccy + my[i];
+    //       int eex = ccx + mx[i];
+    //       if(!(0 <= eey && eey < n && 0 <= eex && eex < n)) continue;
+    //       if(seen[eey][eex]) continue;
+    //       seen[eey][eex] = true;
+    //       q.Enqueue(new List<int>(){eey, eex});
+
+    //       if(f[eey][eex] > 0) {
+    //         ptn.Add(new List<int>(){eey, eex});
+    //       }
+    //     }
+    //   }
+
+    //   if(ptn.Count == 0) break;
+
+    //   int ey = ptn[0][0];
+    //   int ex = ptn[0][1];
+    //   while(cy > ey) {
+    //     WriteLine("U");
+    //     cy--;
+    //   }
+    //   while(cy < ey) {
+    //     WriteLine("D");
+    //     cy++;
+    //   }
+    //   while(cx > ex) {
+    //     WriteLine("L");
+    //     cx--;
+    //   }
+    //   while(cx < ex) {
+    //     WriteLine("R");
+    //     cx++;
+    //   }
+    //   while() {
+
+    //   }
+
+    //   w += (f[ey][ex]);
+    //   WriteLine($"+{f[ey][ex]}");
+    //   f[ey][ex] = 0;
+
+    //   cy = ey;
+    //   cx = ex;
+    // }
+
+    while(!Check(f)) {
       var seen = new List<List<bool>>();
       for(int i = 0; i < n; i++) {
         seen.Add(new List<bool>());
@@ -97,78 +171,13 @@ public class MainClass {
           seen[eey][eex] = true;
           q.Enqueue(new List<int>(){eey, eex});
 
-          if(f[eey][eex] > 0) {
+          if((w >= 1 && f[eey][eex] < 0) || (w == 0 && f[eey][eex] > 0)) {
             ptn.Add(new List<int>(){eey, eex});
           }
         }
       }
 
-      if(ptn.Count == 0) break;
-
-      int ey = ptn[0][0];
-      int ex = ptn[0][1];
-      while(cy > ey) {
-        WriteLine("U");
-        cy--;
-      }
-      while(cy < ey) {
-        WriteLine("D");
-        cy++;
-      }
-      while(cx > ex) {
-        WriteLine("L");
-        cx--;
-      }
-      while(cx < ex) {
-        WriteLine("R");
-        cx++;
-      }
-      while() {
-
-      }
-
-      w += (f[ey][ex]);
-      WriteLine($"+{f[ey][ex]}");
-      f[ey][ex] = 0;
-
-      cy = ey;
-      cx = ex;
-    }
-
-    while(true) {
-      var seen = new List<List<bool>>();
-      for(int i = 0; i < n; i++) {
-        seen.Add(new List<bool>());
-        for(int j = 0; j < n; j++) {
-          seen[i].Add(false);
-        }
-      }
-      seen[cy][cx] = true;
-
-      var q = new Queue<List<int>>();
-      q.Enqueue(new List<int>(){cy, cx});
-      var ptn = new List<List<int>>();
-
-      while(q.Count >= 1) {
-        int ccy = q.Peek()[0];
-        int ccx = q.Peek()[1];
-        q.Dequeue();
-
-        for(int i = 0; i < 4; i++) {
-          int eey = ccy + my[i];
-          int eex = ccx + mx[i];
-          if(!(0 <= eey && eey < n && 0 <= eex && eex < n)) continue;
-          if(seen[eey][eex]) continue;
-          seen[eey][eex] = true;
-          q.Enqueue(new List<int>(){eey, eex});
-
-          if(f[eey][eex] < 0) {
-            ptn.Add(new List<int>(){eey, eex});
-          }
-        }
-      }
-
-      if(ptn.Count == 0) break;
+      if(ptn.Count == 0) continue;
 
       int ey = ptn[0][0];
       int ex = ptn[0][1];
@@ -189,9 +198,17 @@ public class MainClass {
         cx++;
       }
 
-      w -= (-f[ey][ex]);
-      WriteLine($"-{(-f[ey][ex])}");
-      f[ey][ex] = 0;
+      if(w == 0) {
+        int x = f[cy][cx];
+        WriteLine($"+{x}");
+        w += x;
+        f[cy][cx] = 0;
+      } else {
+        int x = Math.Min(-f[cy][cx], w);
+        if(x > 0) WriteLine($"-{x}");
+        w -= x;
+        f[cy][cx] += x;
+      }
 
       cy = ey;
       cx = ex;
