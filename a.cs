@@ -23,128 +23,27 @@ public class MainClass {
     return true;
   }
 
-  public static int Main(string[] args) {
-    var stopwatch = Stopwatch.StartNew();
-    var timeout = TimeSpan.FromSeconds(2.9);
+  // public static int Score(int abs_sum, int cost, int diff) {
+  //   return Math.Round(1000000000 * (double)abs_sum / (cost + diff));
+  // }
 
-    int n = int.Parse(ReadLine());
+  public static List<string> Tidy(int base_cnt, int n, List<List<int>> e) {
+    var res = new List<string>();
     var f = new List<List<int>>();
-    for(int i = 0; i < n; i++) {
+    for(int i = 0; i < e.Count; i++) {
       f.Add(new List<int>());
-      var tmp = ReadLine().Split().Select(int.Parse).ToArray();
-      foreach(int x in tmp) {
-        f[i].Add(x);
+      for(int j = 0; j < e[i].Count; j++) {
+        f[i].Add(e[i][j]);
       }
     }
 
-    int cy = 0;
-    int cx = 0;
-    int w = 0;
-    var sx = new List<int>(){1, -1};
-    int ix = 0;
-    var ans = new List<string>();
-
-    // while(cy < n) {
-    //   if(f[cy][cx] > 0) {
-    //     int x = f[cy][cx];
-    //     ans.Add($"+{x}");
-    //     w += x;
-    //     f[cy][cx] = 0;
-    //   } else if(f[cy][cx] < 0) {
-    //     int x = Math.Min(-f[cy][cx], w);
-    //     if(x > 0) ans.Add($"-{x}");
-    //     w -= x;
-    //     f[cy][cx] += x;
-    //   }
-
-    //   int ey = cy;
-    //   int ex = cx + sx[ix];
-    //   if(0 <= ey && ey < n && 0 <= ex && ex < n) {
-    //     cy = ey;
-    //     cx = ex;
-    //     ans.Add(ix == 0 ? "R" : "L");
-    //   } else {
-    //     cy++;
-    //     if(cy >= n) break;
-    //     ix = (ix + 1) % sx.Count;
-    //     ans.Add("D");
-    //   }
-    // }
-    // cy = n - 1;
-
-    // foreach(string s in ans) {
-    //   WriteLine(s);
-    // }
 
     var my = new List<int>(){-1, 0, 1, 0};
     var mx = new List<int>(){0, -1, 0, 1};
+    int cy = 0;
+    int cx = 0;
+    int w = 0;
 
-    // while(true) {
-    //   var seen = new List<List<bool>>();
-    //   for(int i = 0; i < n; i++) {
-    //     seen.Add(new List<bool>());
-    //     for(int j = 0; j < n; j++) {
-    //       seen[i].Add(false);
-    //     }
-    //   }
-    //   seen[cy][cx] = true;
-
-    //   var q = new Queue<List<int>>();
-    //   q.Enqueue(new List<int>(){cy, cx});
-    //   var ptn = new List<List<int>>();
-
-    //   while(q.Count >= 1) {
-    //     int ccy = q.Peek()[0];
-    //     int ccx = q.Peek()[1];
-    //     q.Dequeue();
-
-    //     for(int i = 0; i < 4; i++) {
-    //       int eey = ccy + my[i];
-    //       int eex = ccx + mx[i];
-    //       if(!(0 <= eey && eey < n && 0 <= eex && eex < n)) continue;
-    //       if(seen[eey][eex]) continue;
-    //       seen[eey][eex] = true;
-    //       q.Enqueue(new List<int>(){eey, eex});
-
-    //       if(f[eey][eex] > 0) {
-    //         ptn.Add(new List<int>(){eey, eex});
-    //       }
-    //     }
-    //   }
-
-    //   if(ptn.Count == 0) break;
-
-    //   int ey = ptn[0][0];
-    //   int ex = ptn[0][1];
-    //   while(cy > ey) {
-    //     WriteLine("U");
-    //     cy--;
-    //   }
-    //   while(cy < ey) {
-    //     WriteLine("D");
-    //     cy++;
-    //   }
-    //   while(cx > ex) {
-    //     WriteLine("L");
-    //     cx--;
-    //   }
-    //   while(cx < ex) {
-    //     WriteLine("R");
-    //     cx++;
-    //   }
-    //   while() {
-
-    //   }
-
-    //   w += (f[ey][ex]);
-    //   WriteLine($"+{f[ey][ex]}");
-    //   f[ey][ex] = 0;
-
-    //   cy = ey;
-    //   cx = ex;
-    // }
-
-    int base_cnt = 5;
     int cnt = base_cnt;
     while(!Check(f)) {
       var seen = new List<List<bool>>();
@@ -187,31 +86,31 @@ public class MainClass {
       int ey = ptn[0][0];
       int ex = ptn[0][1];
       while(cy > ey) {
-        WriteLine("U");
+        res.Add("U");
         cy--;
       }
       while(cy < ey) {
-        WriteLine("D");
+        res.Add("D");
         cy++;
       }
       while(cx > ex) {
-        WriteLine("L");
+        res.Add("L");
         cx--;
       }
       while(cx < ex) {
-        WriteLine("R");
+        res.Add("R");
         cx++;
       }
 
       if(cnt >= 1) {
         int x = f[cy][cx];
-        WriteLine($"+{x}");
+        res.Add($"+{x}");
         w += x;
         f[cy][cx] = 0;
         cnt--;
       } else {
         int x = Math.Min(-f[cy][cx], w);
-        if(x > 0) WriteLine($"-{x}");
+        if(x > 0) res.Add($"-{x}");
         w -= x;
         f[cy][cx] += x;
 
@@ -224,47 +123,26 @@ public class MainClass {
       cx = ex;
     }
 
-    // cy = n - 1;
-    // while(true) {
-    //   if(cy < 0) break;
+    return res;
+  }
 
-    //   if(f[cy][cx] < 0) {
-    //     w -= (-f[cy][cx]);
-    //     WriteLine($"-{(-f[cy][cx])}");
-    //     f[cy][cx] = 0;
-    //   }
+  public static void Main(string[] args) {
+    var stopwatch = Stopwatch.StartNew();
+    var timeout = TimeSpan.FromSeconds(2.9);
 
-    //   if(ans.Count == 0) break;
+    int n = int.Parse(ReadLine());
+    var f = new List<List<int>>();
+    for(int i = 0; i < n; i++) {
+      f.Add(new List<int>());
+      var tmp = ReadLine().Split().Select(int.Parse).ToArray();
+      foreach(int x in tmp) {
+        f[i].Add(x);
+      }
+    }
 
-    //   string s = ans.Last();
-    //   ans.RemoveAt(ans.Count - 1);
-    //   if(s.Length >= 2) continue;
-
-    //   string t = "";
-    //   switch(s) {
-    //     case "U":
-    //       t = "D";
-    //       cy++;
-    //       break;
-    //     case "D":
-    //       t = "U";
-    //       cy--;
-    //       break;
-    //     case "L":
-    //       t = "R";
-    //       cx++;
-    //       break;
-    //     case "R":
-    //       t = "L";
-    //       cx--;
-    //       break;
-    //     default:
-    //       new Exception($"移動方向を表す文字列がおかしい");
-    //       break;
-    //   }
-    //   if(t.Length != 0) WriteLine(t);
-    // }
-
-    return 0;
+    List<string> res = Tidy(10, n, f);
+    foreach(string s in res) {
+      WriteLine(s);
+    }
   }
 }
