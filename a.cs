@@ -63,7 +63,7 @@ public class MainClass {
     return res;
   }
 
-  public static List<string> Tidy(int cy, int cx, int base_cnt, int n, List<List<int>> e) {
+  public static List<string> Tidy(int cy, int cx, int max_w, int n, List<List<int>> e) {
     var res = new List<string>();
     var f = new List<List<int>>();
     for(int i = 0; i < e.Count; i++) {
@@ -77,7 +77,7 @@ public class MainClass {
     var mx = new List<int>(){0, -1, 0, 1};
     int w = 0;
 
-    int cnt = base_cnt;
+    bool dig = true;
     while(!Check(f)) {
       var seen = new List<List<bool>>();
       for(int i = 0; i < n; i++) {
@@ -105,14 +105,14 @@ public class MainClass {
           seen[eey][eex] = true;
           q.Enqueue(new List<int>(){eey, eex});
 
-          if((cnt == 0 && f[eey][eex] < 0) || (cnt >= 1 && f[eey][eex] > 0)) {
+          if((!dig && f[eey][eex] < 0) || (dig && f[eey][eex] > 0)) {
             ptn.Add(new List<int>(){eey, eex});
           }
         }
       }
 
       if(ptn.Count == 0) {
-        cnt = 0;
+        dig = false;
         continue;
       }
 
@@ -139,21 +139,18 @@ public class MainClass {
         cx++;
       }
 
-      if(cnt >= 1) {
+      if(dig) {
         int x = f[cy][cx];
         res.Add($"+{x}");
         w += x;
         f[cy][cx] = 0;
-        cnt--;
+        if(w + x > max_w) dig = false;
       } else {
         int x = Math.Min(-f[cy][cx], w);
         if(x > 0) res.Add($"-{x}");
         w -= x;
         f[cy][cx] += x;
-
-        if(w == 0) {
-          cnt = base_cnt;
-        }
+        if(w == 0) dig = true;
       }
 
       cy = ey;
@@ -193,9 +190,13 @@ public class MainClass {
       int tx = rand.Next(n);
       var res1 = Move(0, 0, ty, tx);
 
-      for(int bc = 5; bc <= 15; bc++) {
+      for(int i = 1; i <= 1; i++) {
+        // int max_w = rand.Next(300);
+        // int max_w = 30 * i;
+        int max_w = 200;
+
         if(stopwatch.Elapsed >= timeout) break;
-        List<string> res2 = Tidy(ty, tx, bc, n, f);
+        List<string> res2 = Tidy(ty, tx, max_w, n, f);
 
         var res = new List<string>();
         foreach(string s in res1) res.Add(s);
@@ -203,19 +204,17 @@ public class MainClass {
 
         long score = Score(res, abs_sum);
         if(score > max_score) {
-          // WriteLine($"up!! bc = {bc} {max_score} => {score}");
+          // WriteLine($"up!! search_point[{search_point}][{i}] max_w = {max_w} {max_score} => {score}");
           max_score = score;
           ans = res;
         } else {
-          // WriteLine($"stay... bc = {bc} {max_score} => {score}");
+          // WriteLine($"stay... search_point[{search_point}]-[{i}] max_w = {max_w} {max_score} => {score}");
         }
-        // bc++;
       }
-      // WriteLine($"end bc = {bc}");
     }
 
     // WriteLine($"last score: {Score(ans, abs_sum)}");
-    // WriteLine($"search point: {search_point}");
+    // WriteLine($"search_point: {search_point}");
     foreach(string s in ans) {
       if(s[0] == '!') continue;
       WriteLine(s);
