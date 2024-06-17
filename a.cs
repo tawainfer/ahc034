@@ -166,6 +166,7 @@ public class MainClass {
 
     int n = int.Parse(ReadLine());
     int abs_sum = 0;
+    var points = new List<List<int>>();
 
     var f = new List<List<int>>();
     for(int i = 0; i < n; i++) {
@@ -174,20 +175,30 @@ public class MainClass {
       for(int j = 0; j < n; j++) {
         int x = tmp[j];
         f[i].Add(x);
-        abs_sum += (x > 0 ? x : -x);
+        int abs = (x > 0 ? x : -x);
+        abs_sum += abs;
+        points.Add(new List<int>(){abs, i, j});
       }
     }
+    points.Sort((v1, v2) => v1[0] - v2[0]);
+    int min_abs = points[0][0];
 
     long max_score = -1;
     var ans = new List<string>();
 
     int search_point = 0;
-    while(stopwatch.Elapsed < timeout) {
+    // while(stopwatch.Elapsed < timeout) {
+    foreach(var p in points) {
+      int abs = p[0];
+      int ty = p[1];
+      int tx = p[2];
+      if(abs != min_abs) break;
+      if(stopwatch.Elapsed >= timeout) break;
       search_point++;
 
       var rand = new Random();
-      int ty = rand.Next(n);
-      int tx = rand.Next(n);
+      // int ty = rand.Next(n);
+      // int tx = rand.Next(n);
       var res1 = Move(0, 0, ty, tx);
 
       for(int i = 1; i <= 1; i++) {
