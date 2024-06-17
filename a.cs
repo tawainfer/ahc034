@@ -180,7 +180,7 @@ public class MainClass {
         points.Add(new List<int>(){abs, i, j});
       }
     }
-    points.Sort((v1, v2) => v1[0] - v2[0]);
+    points.Sort((v1, v2) => v2[0] - v1[0]);
     int min_abs = points[0][0];
 
     long max_score = -1;
@@ -192,7 +192,7 @@ public class MainClass {
       int abs = p[0];
       int ty = p[1];
       int tx = p[2];
-      if(abs != min_abs) break;
+      // if(abs != min_abs) break;
       if(stopwatch.Elapsed >= timeout) break;
       search_point++;
 
@@ -201,10 +201,10 @@ public class MainClass {
       // int tx = rand.Next(n);
       var res1 = Move(0, 0, ty, tx);
 
-      for(int i = 1; i <= 1; i++) {
-        // int max_w = rand.Next(300);
+      for(int i = 1; i <= 10; i++) {
+        int max_w = rand.Next(150, 250);
         // int max_w = 30 * i;
-        int max_w = 200;
+        // int max_w = 200;
 
         if(stopwatch.Elapsed >= timeout) break;
         List<string> res2 = Tidy(ty, tx, max_w, n, f);
