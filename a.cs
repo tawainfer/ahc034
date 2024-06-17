@@ -23,10 +23,6 @@ public class MainClass {
     return true;
   }
 
-  // public static int Score(double abs_sum, double cost, double diff) {
-  //   return Math.Round(1000000000 * abs_sum / (cost + diff));
-  // }
-
   public static long Score(List<string> v, int abs_sum) {
     long cost = 0;
     foreach(string s in v) {
@@ -37,9 +33,34 @@ public class MainClass {
     }
 
     long diff = 0;
-    // WriteLine($"cost: {cost}");
-    // WriteLine($"score: {1000000000.0 * (double)abs_sum / (double)(cost + diff)}");
     return (long)Math.Round(1000000000.0 * (double)abs_sum / (double)(cost + diff)); 
+  }
+
+  public static List<string> Move(int sy, int sx, int gy, int gx) {
+    var res = new List<string>();
+
+    while(sy > gy) {
+      res.Add("U");
+      res.Add($"!{100}");
+      sy--;
+    }
+    while(sy < gy) {
+      res.Add("D");
+      res.Add($"!{100}");
+      sy++;
+    }
+    while(sx > gx) {
+      res.Add("L");
+      res.Add($"!{100}");
+      sx--;
+    }
+    while(sx < gx) {
+      res.Add("R");
+      res.Add($"!{100}");
+      sx++;
+    }
+
+    return res;
   }
 
   public static List<string> Tidy(int cy, int cx, int base_cnt, int n, List<List<int>> e) {
@@ -144,16 +165,11 @@ public class MainClass {
 
   public static void Main(string[] args) {
     var stopwatch = Stopwatch.StartNew();
-    var timeout = TimeSpan.FromSeconds(2.0);
+    var timeout = TimeSpan.FromSeconds(1.9);
 
     int n = int.Parse(ReadLine());
     int abs_sum = 0;
-    int max_h = int.MinValue;
-    int min_h = int.MaxValue;
-    int sy = -1;
-    int sx = -1;
-    int sy2 = -1;
-    int sx2 = -1;
+
     var f = new List<List<int>>();
     for(int i = 0; i < n; i++) {
       f.Add(new List<int>());
@@ -162,69 +178,28 @@ public class MainClass {
         int x = tmp[j];
         f[i].Add(x);
         abs_sum += (x > 0 ? x : -x);
-        if(x > max_h) {
-          max_h = x;
-          sy = i;
-          sx = j;
-        }
-        if(x < min_h) {
-          min_h = x;
-          sy2 = i;
-          sx2 = j;
-        }
       }
     }
-
-    var sys = new List<int>();
-    sys.Add(sy);
-    sys.Add(sy2);
-    sys.Add(0);
-    var sxs = new List<int>();
-    sxs.Add(sx);
-    sxs.Add(sx2);
-    sxs.Add(0);
 
     long max_score = -1;
     var ans = new List<string>();
 
-    for(int k = 0; k < sys.Count; k++) {
-      int cy = 0;
-      int cx = 0;
+    int search_point = 0;
+    while(stopwatch.Elapsed < timeout) {
+      search_point++;
 
-      var header = new List<string>();
-      while(cy > sys[k]) {
-        header.Add("U");
-        header.Add($"!{100}");
-        cy--;
-      }
-      while(cy < sys[k]) {
-        header.Add("D");
-        header.Add($"!{100}");
-        cy++;
-      }
-      while(cx > sxs[k]) {
-        header.Add("L");
-        header.Add($"!{100}");
-        cx--;
-      }
-      while(cx < sxs[k]) {
-        header.Add("R");
-        header.Add($"!{100}");
-        cx++;
-      }
+      var rand = new Random();
+      int ty = rand.Next(n);
+      int tx = rand.Next(n);
+      var res1 = Move(0, 0, ty, tx);
 
-      // while(stopwatch.Elapsed <= timeout) {
-      int bc = 1;
-      while(bc <= 30) {
+      for(int bc = 5; bc <= 15; bc++) {
+        if(stopwatch.Elapsed >= timeout) break;
+        List<string> res2 = Tidy(ty, tx, bc, n, f);
+
         var res = new List<string>();
-        foreach(string s in header) {
-          res.Add(s);
-        }
-
-        List<string> tmp = Tidy(cy, cx, bc, n, f);
-        foreach(string s in tmp) {
-          res.Add(s);
-        }
+        foreach(string s in res1) res.Add(s);
+        foreach(string s in res2) res.Add(s);
 
         long score = Score(res, abs_sum);
         if(score > max_score) {
@@ -234,12 +209,13 @@ public class MainClass {
         } else {
           // WriteLine($"stay... bc = {bc} {max_score} => {score}");
         }
-        bc++;
+        // bc++;
       }
       // WriteLine($"end bc = {bc}");
     }
 
     // WriteLine($"last score: {Score(ans, abs_sum)}");
+    // WriteLine($"search point: {search_point}");
     foreach(string s in ans) {
       if(s[0] == '!') continue;
       WriteLine(s);
